@@ -14,6 +14,8 @@ archive:
     darwin: Darwin
     linux: Linux
     windows: Windows
+goos:
+  - windows
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -25,3 +27,6 @@ changelog:
     - '^docs:'
     - '^test:'
 
+ignore:
+  - goos: darwin
+    goarch: 386
