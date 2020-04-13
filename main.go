@@ -2,6 +2,8 @@ package main
 
 import (
   "fmt"
+  "log"
+  "io"
   "os"
   "encoding/csv"
   "github.com/aws/aws-sdk-go/aws"
@@ -74,6 +76,25 @@ func writeFile( fileName string, results [][]string ) {
   
 }
 
+func parseFile (filename string) {
+	csvFile, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Couldn't open the file")
+	}
+	
+	readData:= csv.NewReader(csvFile)
+	for {
+		field, err := readData.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Date: %s Service: %s Cost: %s\n", field[0], field[1], field[2])
+	}
+}
+
 func main() {  
   app := cli.NewApp()
   app.Name = "A simple cost analyzer for aws"
@@ -89,6 +110,15 @@ func main() {
         fileName := c.Args().Get(1)
         days, _ := strconv.Atoi(timeinDays)
         writeFile(fileName, costAWS(days))
+      },
+    },
+    {
+      Name: "show_cost",
+      Aliases: []string{"s"},
+      Usage: "reads and shows the data in terminal",
+      Action: func(c *cli.Context) {
+        fileName := c.Args().Get(0)
+        parseFile(fileName);
       },
     },
   }
